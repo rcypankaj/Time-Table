@@ -14,7 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import RNPickerSelect from "react-native-picker-select";
+import { Picker } from "@react-native-picker/picker"; // ✅ Native Picker
 import moment from "moment";
 import * as Haptics from "expo-haptics";
 
@@ -64,7 +64,8 @@ const AddTaskScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       Alert.alert("Error", "Cannot set tasks for past dates");
       return;
     }
-
+    console.log(reminder, "dslknfjaj");
+    // return;
     try {
       if (reminder) {
         const hasPermission = await requestPermissions();
@@ -201,26 +202,38 @@ const AddTaskScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               <View style={[styles.inputGroup, styles.halfWidth]}>
                 <Text style={styles.label}>Priority</Text>
                 <View style={styles.pickerContainer}>
-                  <RNPickerSelect
-                    value={priority}
+                  <Picker
+                    selectedValue={priority}
                     onValueChange={(value) => setPriority(value)}
-                    items={priorities}
-                    style={pickerSelectStyles}
-                    useNativeAndroidPickerStyle={false}
-                  />
+                    style={styles.picker}
+                  >
+                    {priorities.map((item) => (
+                      <Picker.Item
+                        key={item.value}
+                        label={item.label}
+                        value={item.value}
+                      />
+                    ))}
+                  </Picker>
                 </View>
               </View>
 
               <View style={[styles.inputGroup, styles.halfWidth]}>
                 <Text style={styles.label}>Category</Text>
                 <View style={styles.pickerContainer}>
-                  <RNPickerSelect
-                    value={category}
+                  <Picker
+                    selectedValue={category}
                     onValueChange={(value) => setCategory(value)}
-                    items={categories}
-                    style={pickerSelectStyles}
-                    useNativeAndroidPickerStyle={false}
-                  />
+                    style={styles.picker}
+                  >
+                    {categories.map((item) => (
+                      <Picker.Item
+                        key={item.value}
+                        label={item.label}
+                        value={item.value}
+                      />
+                    ))}
+                  </Picker>
                 </View>
               </View>
             </View>
@@ -295,29 +308,6 @@ const AddTaskScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-
-const pickerSelectStyles = StyleSheet.create({
-  inputIOS: {
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    borderRadius: 12,
-    color: "#1f2937",
-    backgroundColor: "#ffffff",
-  },
-  inputAndroid: {
-    fontSize: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    borderRadius: 12,
-    color: "#1f2937",
-    backgroundColor: "#ffffff",
-  },
-});
 
 const styles = StyleSheet.create({
   container: {
@@ -397,6 +387,12 @@ const styles = StyleSheet.create({
     borderColor: "#d1d5db",
     borderRadius: 12,
     backgroundColor: "#ffffff",
+    overflow: "hidden",
+  },
+  picker: {
+    height: 50,
+    width: "100%",
+    color: "#1f2937",
   },
   reminderToggle: {
     flexDirection: "row",

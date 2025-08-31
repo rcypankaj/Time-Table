@@ -18,9 +18,10 @@ const NotificationContext = createContext<NotificationContextType | undefined>(
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
+    shouldShowBanner: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
+    shouldShowList: true,
   }),
 });
 
@@ -48,8 +49,8 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
       });
 
     return () => {
-      Notifications.removeNotificationSubscription(notificationListener);
-      Notifications.removeNotificationSubscription(responseListener);
+      notificationListener.remove();
+      responseListener.remove();
     };
   }, []);
 
@@ -99,7 +100,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
     const now = new Date();
 
     // Schedule notification 15 minutes before task time
-    const notificationTime = new Date(taskDate.getTime() - 15 * 60 * 1000);
+    const notificationTime = new Date(taskDate.getTime() - 5 * 60 * 1000);
 
     if (notificationTime > now) {
       await Notifications.scheduleNotificationAsync({
@@ -113,6 +114,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
         },
         trigger: {
           date: notificationTime,
+          type: Notifications.SchedulableTriggerInputTypes.DATE,
         },
       });
 
@@ -125,6 +127,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
           sound: true,
         },
         trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.DATE,
           date: taskDate,
         },
       });

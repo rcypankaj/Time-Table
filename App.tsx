@@ -1,21 +1,23 @@
-import React from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { StatusBar } from "expo-status-bar";
-import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { StatusBar } from "expo-status-bar";
+import React from "react";
 
 // Screens
-import HomeScreen from "./src/screens/HomeScreen";
 import AddTaskScreen from "./src/screens/AddTaskScreen";
-import TaskDetailScreen from "./src/screens/TaskDetailScreen";
 import CalendarScreen from "./src/screens/CalendarScreen";
+import HomeScreen from "./src/screens/HomeScreen";
 import SettingsScreen from "./src/screens/SettingsScreen";
+import TaskDetailScreen from "./src/screens/TaskDetailScreen";
 
 // Context
-import { TaskProvider } from "./src/context/TaskContext";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NotificationProvider } from "./src/context/NotificationContext";
+import { TaskProvider } from "./src/context/TaskContext";
+import AppProviderContext from "./src/context/AppProviderContext";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -61,45 +63,49 @@ const TabNavigator = () => {
 
 export default function App() {
   return (
-    <NotificationProvider>
-      <TaskProvider>
-        <NavigationContainer>
-          <StatusBar style="light" />
-          <Stack.Navigator
-            screenOptions={{
-              headerStyle: {
-                backgroundColor: "#6366f1",
-              },
-              headerTintColor: "#fff",
-              headerTitleStyle: {
-                fontWeight: "bold",
-              },
-              headerBackground: () => (
-                <LinearGradient
-                  colors={["#6366f1", "#8b5cf6"]}
-                  style={{ flex: 1 }}
+    <SafeAreaProvider style={{ flex: 1 }}>
+      <AppProviderContext>
+        <NotificationProvider>
+          <TaskProvider>
+            <NavigationContainer>
+              <StatusBar style="dark" translucent />
+              <Stack.Navigator
+                screenOptions={{
+                  headerStyle: {
+                    backgroundColor: "#6366f1",
+                  },
+                  headerTintColor: "#fff",
+                  headerTitleStyle: {
+                    fontWeight: "bold",
+                  },
+                  headerBackground: () => (
+                    <LinearGradient
+                      colors={["#6366f1", "#8b5cf6"]}
+                      style={{ flex: 1 }}
+                    />
+                  ),
+                }}
+              >
+                <Stack.Screen
+                  name="Main"
+                  component={TabNavigator}
+                  options={{ headerShown: false }}
                 />
-              ),
-            }}
-          >
-            <Stack.Screen
-              name="Main"
-              component={TabNavigator}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="AddTask"
-              component={AddTaskScreen}
-              options={{ title: "Add New Task" }}
-            />
-            <Stack.Screen
-              name="TaskDetail"
-              component={TaskDetailScreen}
-              options={{ title: "Task Details" }}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </TaskProvider>
-    </NotificationProvider>
+                <Stack.Screen
+                  name="AddTask"
+                  component={AddTaskScreen}
+                  options={{ title: "Add New Task" }}
+                />
+                <Stack.Screen
+                  name="TaskDetail"
+                  component={TaskDetailScreen}
+                  options={{ title: "Task Details" }}
+                />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </TaskProvider>
+        </NotificationProvider>
+      </AppProviderContext>
+    </SafeAreaProvider>
   );
 }
