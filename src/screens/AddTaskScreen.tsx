@@ -20,6 +20,7 @@ import * as Haptics from "expo-haptics";
 
 import { useTask } from "../context/TaskContext";
 import { useNotification } from "../context/NotificationContext";
+import DaySelector from "../components/DaySelector";
 
 const AddTaskScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { addTask } = useTask();
@@ -32,6 +33,8 @@ const AddTaskScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [priority, setPriority] = useState<"low" | "medium" | "high">("medium");
   const [category, setCategory] = useState("Personal");
   const [reminder, setReminder] = useState(true);
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurringDays, setRecurringDays] = useState<number[]>([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
@@ -57,6 +60,14 @@ const AddTaskScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       return;
     }
 
+    if (isRecurring && recurringDays.length === 0) {
+      Alert.alert(
+        "Error",
+        "Please select at least one day for recurring tasks"
+      );
+      return;
+    }
+
     if (
       date < new Date() &&
       moment(date).format("YYYY-MM-DD") !== moment().format("YYYY-MM-DD")
@@ -64,8 +75,7 @@ const AddTaskScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       Alert.alert("Error", "Cannot set tasks for past dates");
       return;
     }
-    console.log(reminder, "dslknfjaj");
-    // return;
+
     try {
       if (reminder) {
         const hasPermission = await requestPermissions();
@@ -90,6 +100,8 @@ const AddTaskScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         category,
         completed: false,
         reminder,
+        isRecurring,
+        recurringDays,
       };
 
       await addTask(taskData);
@@ -266,6 +278,50 @@ const AddTaskScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                 </View>
               </TouchableOpacity>
             </View>
+
+            <View style={styles.inputGroup}>
+              <TouchableOpacity
+                style={styles.reminderToggle}
+                onPress={() => setIsRecurring(!isRecurring)}
+              >
+                <View style={styles.reminderContent}>
+                  <Ionicons
+                    name={isRecurring ? "repeat" : "repeat-outline"}
+                    size={24}
+                    color={isRecurring ? "#6366f1" : "#9ca3af"}
+                  />
+                  <View style={styles.reminderTextContainer}>
+                    <Text style={styles.reminderTitle}>Recurring Task</Text>
+                    <Text style={styles.reminderSubtitle}>
+                      Repeat this task on selected days
+                    </Text>
+                  </View>
+                </View>
+                <View
+                  style={[styles.toggle, isRecurring && styles.toggleActive]}
+                >
+                  <View
+                    style={[
+                      styles.toggleThumb,
+                      isRecurring && styles.toggleThumbActive,
+                    ]}
+                  />
+                </View>
+              </TouchableOpacity>
+            </View>
+
+            {isRecurring && (
+              <DaySelector
+                selectedDays={recurringDays}
+                onDayToggle={(day) => {
+                  setRecurringDays((prev) =>
+                    prev.includes(day)
+                      ? prev.filter((d) => d !== day)
+                      : [...prev, day]
+                  );
+                }}
+              />
+            )}
           </View>
         </ScrollView>
 

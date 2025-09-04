@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "567244632054",
+    "project_id": "personal-685bd",
+    "storage_bucket": "personal-685bd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:567244632054:android:e50bb0142bebe62287e1d7",
+        "android_client_info": {
+          "package_name": "com.taskreminder.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSZqF86WgQPCNMRsaNpZE_sH09hAuDUXE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

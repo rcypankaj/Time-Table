@@ -11,6 +11,8 @@ export interface Task {
   category: string;
   completed: boolean;
   reminder: boolean;
+  isRecurring: boolean;
+  recurringDays: number[]; // Array of day numbers (0 = Sunday, 1 = Monday, etc.)
   createdAt: string;
   updatedAt: string;
 }
@@ -114,6 +116,8 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
           category TEXT NOT NULL,
           completed INTEGER DEFAULT 0,
           reminder INTEGER DEFAULT 1,
+          isRecurring INTEGER DEFAULT 0,
+          recurringDays TEXT DEFAULT '[]',
           createdAt TEXT NOT NULL,
           updatedAt TEXT NOT NULL
         )
@@ -126,13 +130,15 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
   const loadTasks = async () => {
     dispatch({ type: "SET_LOADING", payload: true });
     try {
-      const rows = await db.getAllAsync<Task>(
+      const rows = await db.getAllAsync<any>(
         "SELECT * FROM tasks ORDER BY date ASC, time ASC"
       );
       const tasks = rows.map((task) => ({
         ...task,
         completed: Boolean(task.completed),
         reminder: Boolean(task.reminder),
+        isRecurring: Boolean(task.isRecurring),
+        recurringDays: task.recurringDays ? JSON.parse(task.recurringDays) : [],
       }));
       dispatch({ type: "SET_TASKS", payload: tasks });
     } catch (error: any) {
@@ -156,8 +162,8 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
 
     try {
       await db.runAsync(
-        `INSERT INTO tasks (id, title, description, date, time, priority, category, completed, reminder, createdAt, updatedAt)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO tasks (id, title, description, date, time, priority, category, completed, reminder, isRecurring, recurringDays, createdAt, updatedAt)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           task.id,
           task.title,
@@ -168,6 +174,8 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
           task.category,
           task.completed ? 1 : 0,
           task.reminder ? 1 : 0,
+          task.isRecurring ? 1 : 0,
+          JSON.stringify(task.recurringDays),
           task.createdAt,
           task.updatedAt,
         ]
@@ -183,7 +191,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       await db.runAsync(
         `UPDATE tasks 
-         SET title = ?, description = ?, date = ?, time = ?, priority = ?, category = ?, completed = ?, reminder = ?, updatedAt = ?
+         SET title = ?, description = ?, date = ?, time = ?, priority = ?, category = ?, completed = ?, reminder = ?, isRecurring = ?, recurringDays = ?, updatedAt = ?
          WHERE id = ?`,
         [
           updatedTask.title,
@@ -194,6 +202,8 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
           updatedTask.category,
           updatedTask.completed ? 1 : 0,
           updatedTask.reminder ? 1 : 0,
+          updatedTask.isRecurring ? 1 : 0,
+          JSON.stringify(updatedTask.recurringDays),
           updatedTask.updatedAt,
           updatedTask.id,
         ]
@@ -222,7 +232,22 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const getTasksByDate = (date: string): Task[] => {
-    return state.tasks.filter((task) => task.date === date);
+    const targetDate = new Date(date);
+    const dayOfWeek = targetDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+
+    return state.tasks.filter((task) => {
+      // Include tasks for the exact date
+      if (task.date === date) {
+        return true;
+      }
+
+      // Include recurring tasks that match the day of week
+      if (task.isRecurring && task.recurringDays.includes(dayOfWeek)) {
+        return true;
+      }
+
+      return false;
+    });
   };
 
   return (

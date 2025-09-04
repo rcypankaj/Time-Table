@@ -189,6 +189,19 @@ const TaskCard: React.FC<TaskCardProps> = ({
                 <Text style={styles.reminderText}>Reminder</Text>
               </View>
             )}
+
+            {task.isRecurring && (
+              <View style={styles.recurringContainer}>
+                <Ionicons name="repeat-outline" size={16} color="#8b5cf6" />
+                <Text style={styles.recurringText}>
+                  {task.recurringDays.length === 7
+                    ? "Daily"
+                    : task.recurringDays.length === 1
+                    ? "Weekly"
+                    : `${task.recurringDays.length} days`}
+                </Text>
+              </View>
+            )}
           </View>
         </LinearGradient>
       </TouchableOpacity>
@@ -305,6 +318,16 @@ const styles = StyleSheet.create({
   reminderText: {
     fontSize: 12,
     color: "#6366f1",
+    fontWeight: "500",
+  },
+  recurringContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  recurringText: {
+    fontSize: 12,
+    color: "#8b5cf6",
     fontWeight: "500",
   },
 });
