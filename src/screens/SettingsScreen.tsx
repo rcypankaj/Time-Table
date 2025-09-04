@@ -15,10 +15,12 @@ import * as Haptics from "expo-haptics";
 
 import { useTask } from "../context/TaskContext";
 import { useNotification } from "../context/NotificationContext";
+import { useUpdate } from "../context/UpdateContext";
 
 const SettingsScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { state, dispatch } = useTask();
   const { requestPermissions } = useNotification();
+  const { checkForUpdates, state: updateState } = useUpdate();
 
   const handleClearAllTasks = () => {
     Alert.alert(
@@ -74,10 +76,28 @@ const SettingsScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
 
+  const handleCheckForUpdates = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    try {
+      await checkForUpdates();
+      if (!updateState.isUpdateAvailable) {
+        Alert.alert(
+          "No Updates",
+          "You're using the latest version of the app!"
+        );
+      }
+    } catch (error) {
+      Alert.alert(
+        "Update Check Failed",
+        "Unable to check for updates. Please try again later."
+      );
+    }
+  };
+
   const handleAbout = () => {
     Alert.alert(
       "About Task Reminder",
-      "Task Reminder v1.0.0\n\nA beautiful and intuitive task management app to help you stay organized and productive.\n\nFeatures:\n• Create and manage tasks\n• Set reminders and notifications\n• Calendar view\n• Priority levels\n• Categories\n• Progress tracking",
+      "Task Reminder v1.0.0\n\nA beautiful and intuitive task management app to help you stay organized and productive.\n\nFeatures:\n• Create and manage tasks\n• Set reminders and notifications\n• Calendar view\n• Priority levels\n• Categories\n• Progress tracking\n• Recurring tasks\n• OTA updates",
       [{ text: "OK" }]
     );
   };
@@ -100,6 +120,13 @@ const SettingsScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       subtitle: "Manage notification preferences",
       icon: "notifications-outline",
       onPress: handleNotificationSettings,
+      showArrow: true,
+    },
+    {
+      title: "Check for Updates",
+      subtitle: "Check for app updates",
+      icon: "cloud-download-outline",
+      onPress: handleCheckForUpdates,
       showArrow: true,
     },
     {

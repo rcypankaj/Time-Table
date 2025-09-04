@@ -62,7 +62,8 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-updates"
     ],
     "notification": {
       "icon": "./assets/notification-icon.png",

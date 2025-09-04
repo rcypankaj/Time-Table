@@ -17,7 +17,11 @@ import TaskDetailScreen from "./src/screens/TaskDetailScreen";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NotificationProvider } from "./src/context/NotificationContext";
 import { TaskProvider } from "./src/context/TaskContext";
+import { UpdateProvider } from "./src/context/UpdateContext";
 import AppProviderContext from "./src/context/AppProviderContext";
+
+// Components
+import UpdateNotification from "./src/components/UpdateNotification";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -65,46 +69,49 @@ export default function App() {
   return (
     <SafeAreaProvider style={{ flex: 1 }}>
       <AppProviderContext>
-        <NotificationProvider>
-          <TaskProvider>
-            <NavigationContainer>
-              <StatusBar style="dark" translucent />
-              <Stack.Navigator
-                screenOptions={{
-                  headerStyle: {
-                    backgroundColor: "#6366f1",
-                  },
-                  headerTintColor: "#fff",
-                  headerTitleStyle: {
-                    fontWeight: "bold",
-                  },
-                  headerBackground: () => (
-                    <LinearGradient
-                      colors={["#6366f1", "#8b5cf6"]}
-                      style={{ flex: 1 }}
-                    />
-                  ),
-                }}
-              >
-                <Stack.Screen
-                  name="Main"
-                  component={TabNavigator}
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name="AddTask"
-                  component={AddTaskScreen}
-                  options={{ title: "Add New Task" }}
-                />
-                <Stack.Screen
-                  name="TaskDetail"
-                  component={TaskDetailScreen}
-                  options={{ title: "Task Details" }}
-                />
-              </Stack.Navigator>
-            </NavigationContainer>
-          </TaskProvider>
-        </NotificationProvider>
+        <UpdateProvider>
+          <NotificationProvider>
+            <TaskProvider>
+              <NavigationContainer>
+                <StatusBar style="dark" translucent />
+                <Stack.Navigator
+                  screenOptions={{
+                    headerStyle: {
+                      backgroundColor: "#6366f1",
+                    },
+                    headerTintColor: "#fff",
+                    headerTitleStyle: {
+                      fontWeight: "bold",
+                    },
+                    headerBackground: () => (
+                      <LinearGradient
+                        colors={["#6366f1", "#8b5cf6"]}
+                        style={{ flex: 1 }}
+                      />
+                    ),
+                  }}
+                >
+                  <Stack.Screen
+                    name="Main"
+                    component={TabNavigator}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="AddTask"
+                    component={AddTaskScreen}
+                    options={{ title: "Add New Task" }}
+                  />
+                  <Stack.Screen
+                    name="TaskDetail"
+                    component={TaskDetailScreen}
+                    options={{ title: "Task Details" }}
+                  />
+                </Stack.Navigator>
+                <UpdateNotification />
+              </NavigationContainer>
+            </TaskProvider>
+          </NotificationProvider>
+        </UpdateProvider>
       </AppProviderContext>
     </SafeAreaProvider>
   );
