@@ -264,7 +264,7 @@ const AddTaskScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                   <View style={styles.reminderTextContainer}>
                     <Text style={styles.reminderTitle}>Enable Reminder</Text>
                     <Text style={styles.reminderSubtitle}>
-                      Get notified 15 minutes before task time
+                      Get notified 5 minutes before task time
                     </Text>
                   </View>
                 </View>

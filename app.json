@@ -6,7 +6,9 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.taskreminder.app",
@@ -22,6 +24,8 @@
       "package": "com.taskreminder.app",
       "googleServicesFile": "./src/config/google-services.json",
       "permissions": [
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.POST_NOTIFICATIONS",
         "android.permission.SCHEDULE_EXACT_ALARM",
         "android.permission.POST_NOTIFICATIONS"
       ]
@@ -39,7 +43,9 @@
         {
           "icon": "./assets/notification-icon.png",
           "color": "#6366f1",
-          "sounds": ["./assets/notification_sound.wav"]
+          "sounds": [
+            "./assets/notification_sound.wav"
+          ]
         }
       ],
       [
@@ -73,6 +79,12 @@
       "eas": {
         "projectId": "50fde158-e3a0-41f8-aa1b-f84f24797efa"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/50fde158-e3a0-41f8-aa1b-f84f24797efa"
     }
   }
 }
